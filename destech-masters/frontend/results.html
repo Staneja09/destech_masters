@@ -1,0 +1,701 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hackathon Results | DesTech Master's</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      background: #080b14;
+      color: #e5e7eb;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .panel {
+      background: rgba(17, 24, 39, 0.9);
+      border: 1px solid rgba(34, 211, 238, 0.22);
+      border-radius: 16px;
+    }
+
+    .neon {
+      color: #67e8f9;
+      text-shadow: 0 0 12px rgba(34, 211, 238, 0.25);
+    }
+
+    .field {
+      width: 100%;
+      background: #0b1120;
+      color: #f3f4f6;
+      border: 1px solid #374151;
+      border-radius: 9px;
+      padding: 11px 12px;
+      outline: none;
+    }
+
+    .field:focus {
+      border-color: #22d3ee;
+      box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.12);
+    }
+
+    .field option {
+      background: #0b1120;
+    }
+
+    .btn {
+      padding: 10px 15px;
+      border-radius: 9px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.18s;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: #22d3ee;
+      color: #07111c;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #67e8f9;
+    }
+
+    .btn-secondary {
+      background: #312e81;
+      border: 1px solid #6366f1;
+      color: #e0e7ff;
+    }
+
+    .btn-danger {
+      background: rgba(127, 29, 29, 0.35);
+      border: 1px solid #991b1b;
+      color: #fecaca;
+    }
+
+    .btn-muted {
+      background: #1f2937;
+      border: 1px solid #4b5563;
+      color: #e5e7eb;
+    }
+
+    .muted {
+      color: #9ca3af;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(34, 211, 238, 0.3);
+      background: rgba(8, 145, 178, 0.12);
+      color: #a5f3fc;
+      font-size: 12px;
+    }
+
+    .place {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      background: rgba(8, 145, 178, 0.12);
+      border: 1px solid rgba(34, 211, 238, 0.3);
+      color: #67e8f9;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .notice {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin-bottom: 18px;
+    }
+
+    .notice-error {
+      display: block;
+      background: rgba(127, 29, 29, 0.3);
+      border: 1px solid #991b1b;
+      color: #fecaca;
+    }
+
+    .notice-success {
+      display: block;
+      background: rgba(6, 78, 59, 0.3);
+      border: 1px solid #047857;
+      color: #a7f3d0;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen">
+  <header class="border-b border-cyan-900/60 bg-gray-950/90">
+    <div class="max-w-7xl mx-auto px-5 py-4 flex flex-wrap items-center justify-between gap-4">
+      <a href="index.html" class="text-xl font-black tracking-wide neon">
+        DesTech Master's
+      </a>
+
+      <nav class="flex flex-wrap items-center gap-4 text-sm">
+        <a href="dashboard.html" class="text-gray-300 hover:text-cyan-300">Dashboard</a>
+        <a href="hackathons.html" class="text-gray-300 hover:text-cyan-300">Hackathons</a>
+        <a href="lineup.html" class="text-gray-300 hover:text-cyan-300">Team Lineups</a>
+        <a href="results.html" class="text-cyan-300 font-bold">Results</a>
+        <a href="profile.html" class="text-gray-300 hover:text-cyan-300">Profile</a>
+        <button id="logoutBtn" class="text-rose-300 hover:text-rose-200">Logout</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-5 py-8">
+    <section class="mb-8">
+      <p class="text-cyan-400 uppercase tracking-[0.25em] text-xs font-bold mb-2">
+        Hall of Champions
+      </p>
+      <h1 class="text-3xl md:text-4xl font-black mb-3">
+        Hackathon <span class="neon">Results</span>
+      </h1>
+      <p class="muted max-w-2xl">
+        Discover winning teams, final rankings, and awards from each hackathon.
+      </p>
+    </section>
+
+    <div id="notice" class="notice" role="status"></div>
+
+    <section class="panel p-5 md:p-6 mb-8">
+      <div class="grid md:grid-cols-[1fr_auto] gap-4 items-end">
+        <div>
+          <label for="hackathonSelect" class="block text-sm mb-2">
+            Select a hackathon
+          </label>
+          <select id="hackathonSelect" class="field">
+            <option value="">Loading hackathons...</option>
+          </select>
+        </div>
+
+        <button id="loadResultsBtn" class="btn btn-primary">
+          View Results
+        </button>
+      </div>
+    </section>
+
+    <section id="adminSection" class="panel p-5 md:p-6 mb-8 hidden">
+      <div class="flex flex-wrap justify-between items-start gap-3 mb-5">
+        <div>
+          <p class="text-xs uppercase tracking-widest text-purple-300 mb-2">
+            Admin controls
+          </p>
+          <h2 id="formHeading" class="text-xl font-bold">Publish a Result</h2>
+          <p class="muted text-sm mt-1">
+            Select a team and publish its placement and award.
+          </p>
+        </div>
+        <span class="tag">Administrator</span>
+      </div>
+
+      <form id="resultForm" class="grid md:grid-cols-2 gap-4">
+        <div class="md:col-span-2">
+          <label for="teamSelect" class="block text-sm mb-2">Team *</label>
+          <select id="teamSelect" class="field" required>
+            <option value="">Select a hackathon first</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="placement" class="block text-sm mb-2">Placement *</label>
+          <select id="placement" class="field" required>
+            <option value="1">1st Place</option>
+            <option value="2">2nd Place</option>
+            <option value="3">3rd Place</option>
+            <option value="4">4th Place</option>
+            <option value="5">5th Place</option>
+            <option value="0">Special Award / Unranked</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="award" class="block text-sm mb-2">Award title</label>
+          <input id="award" class="field" maxlength="150"
+            placeholder="e.g. Best Innovation Award" />
+        </div>
+
+        <div class="md:col-span-2">
+          <label for="notes" class="block text-sm mb-2">Project or judge notes</label>
+          <textarea id="notes" class="field" rows="3" maxlength="2000"
+            placeholder="Optional result summary or feedback"></textarea>
+        </div>
+
+        <div class="md:col-span-2 flex flex-wrap gap-3">
+          <button id="saveResultBtn" class="btn btn-primary" type="submit">
+            Publish Result
+          </button>
+          <button id="cancelEditBtn" class="btn btn-muted hidden" type="button">
+            Cancel Edit
+          </button>
+        </div>
+      </form>
+
+      <p class="muted text-xs mt-4">
+        Published results are visible to all logged-in users. Only administrators
+        should be able to modify them.
+      </p>
+    </section>
+
+    <section>
+      <div class="flex flex-wrap items-end justify-between gap-3 mb-5">
+        <div>
+          <h2 class="text-2xl font-black">Final Rankings</h2>
+          <p id="resultsSubtitle" class="muted text-sm mt-1">
+            Select a hackathon to view its results.
+          </p>
+        </div>
+        <span id="resultCount" class="tag">0 results</span>
+      </div>
+
+      <div id="resultsContainer" class="space-y-4">
+        <div class="panel p-6">
+          <p class="muted">Choose a hackathon to view published results.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="text-center muted text-xs py-8 px-4">
+    DesTech Master's · Celebrating innovation
+  </footer>
+
+  <script>
+    const API_BASE = "http://127.0.0.1:5000";
+
+    let currentUser = null;
+    let hackathons = [];
+    let teams = [];
+    let results = [];
+    let editingResultId = null;
+
+    const $ = id => document.getElementById(id);
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      })[char]);
+    }
+
+    async function apiFetch(path, options = {}) {
+      const config = {
+        ...options,
+        credentials: "include",
+        headers: {
+          ...(options.body ? { "Content-Type": "application/json" } : {}),
+          ...(options.headers || {})
+        }
+      };
+
+      let response;
+
+      try {
+        response = await fetch(`${API_BASE}${path}`, config);
+      } catch {
+        throw new Error(
+          "Cannot connect to Flask. Make sure the backend is running on port 5000."
+        );
+      }
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || data.success === false) {
+        throw new Error(data.message || `Request failed (${response.status}).`);
+      }
+
+      return data;
+    }
+
+    function showNotice(message, type = "success") {
+      const notice = $("notice");
+      notice.textContent = message;
+      notice.className = `notice ${type === "error" ? "notice-error" : "notice-success"}`;
+      notice.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    function clearNotice() {
+      $("notice").className = "notice";
+      $("notice").textContent = "";
+    }
+
+    function isAdmin() {
+      return String(currentUser?.role || "").toLowerCase() === "admin";
+    }
+
+    function getHackathonTitle(id) {
+      const item = hackathons.find(h => String(h.id) === String(id));
+      return item?.title || item?.name || `Hackathon #${id}`;
+    }
+
+    async function loadHackathons() {
+      const data = await apiFetch("/api/hackathons");
+      hackathons = data.hackathons || data.data || [];
+
+      $("hackathonSelect").innerHTML =
+        '<option value="">Select a hackathon</option>' +
+        hackathons.map(h => `
+          <option value="${escapeHtml(h.id)}">
+            ${escapeHtml(h.title || h.name || `Hackathon #${h.id}`)}
+          </option>
+        `).join("");
+    }
+
+    async function loadTeamsForAdmin(hackathonId) {
+      if (!isAdmin() || !hackathonId) {
+        teams = [];
+        $("teamSelect").innerHTML =
+          '<option value="">Select a hackathon first</option>';
+        return;
+      }
+
+      const data = await apiFetch(
+        `/api/hackathons/${encodeURIComponent(hackathonId)}/lineups`
+      );
+
+      teams = data.lineups || data.teams || [];
+
+      $("teamSelect").innerHTML =
+        '<option value="">Select a team</option>' +
+        teams.map(team => `
+          <option value="${escapeHtml(team.id)}">
+            ${escapeHtml(team.team_name)}
+          </option>
+        `).join("");
+    }
+
+    function placementLabel(placement) {
+      const n = Number(placement);
+
+      if (n === 1) return "1st Place";
+      if (n === 2) return "2nd Place";
+      if (n === 3) return "3rd Place";
+      if (n > 3) return `${n}th Place`;
+
+      return "Special Award";
+    }
+
+    function placementIcon(placement) {
+      const n = Number(placement);
+
+      if (n === 1) return "🏆";
+      if (n === 2) return "🥈";
+      if (n === 3) return "🥉";
+
+      return "✦";
+    }
+
+    function sortedResults(items) {
+      return [...items].sort((a, b) => {
+        const ap = Number(a.placement ?? 999);
+        const bp = Number(b.placement ?? 999);
+
+        if (ap === 0 && bp !== 0) return 1;
+        if (bp === 0 && ap !== 0) return -1;
+
+        return ap - bp;
+      });
+    }
+
+    function renderResults() {
+      const container = $("resultsContainer");
+      const hackathonId = $("hackathonSelect").value;
+
+      $("resultCount").textContent =
+        `${results.length} result${results.length === 1 ? "" : "s"}`;
+
+      $("resultsSubtitle").textContent = hackathonId
+        ? `Published rankings for ${getHackathonTitle(hackathonId)}`
+        : "Select a hackathon to view its results.";
+
+      if (!hackathonId) {
+        container.innerHTML = `
+          <div class="panel p-6">
+            <p class="muted">Choose a hackathon to view published results.</p>
+          </div>`;
+        return;
+      }
+
+      if (!results.length) {
+        container.innerHTML = `
+          <div class="panel p-8 text-center">
+            <div class="text-4xl mb-3">🏆</div>
+            <h3 class="text-lg font-bold mb-2">No results published yet</h3>
+            <p class="muted text-sm">
+              Results for this hackathon will appear here when they are published.
+            </p>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = sortedResults(results).map(result => {
+        const placement = Number(result.placement ?? 0);
+        const teamName = result.team_name || result.team || "Team";
+        const award = result.award || "";
+        const notes = result.notes || result.description || "";
+
+        return `
+          <article class="panel p-5 md:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-start gap-4">
+              <div class="place shrink-0">${placementIcon(placement)}</div>
+
+              <div class="flex-1 min-w-0">
+                <div class="flex flex-wrap items-center gap-2 mb-2">
+                  <span class="tag">${escapeHtml(placementLabel(placement))}</span>
+                  ${award ? `<span class="tag">${escapeHtml(award)}</span>` : ""}
+                </div>
+
+                <h3 class="text-xl font-bold break-words">
+                  ${escapeHtml(teamName)}
+                </h3>
+
+                ${notes ? `
+                  <p class="muted text-sm mt-2 whitespace-pre-wrap break-words">
+                    ${escapeHtml(notes)}
+                  </p>
+                ` : ""}
+              </div>
+
+              ${isAdmin() ? `
+                <div class="flex gap-2 shrink-0">
+                  <button class="btn btn-secondary text-sm"
+                    data-action="edit" data-id="${escapeHtml(result.id)}">
+                    Edit
+                  </button>
+                  <button class="btn btn-danger text-sm"
+                    data-action="delete" data-id="${escapeHtml(result.id)}">
+                    Delete
+                  </button>
+                </div>
+              ` : ""}
+            </div>
+          </article>`;
+      }).join("");
+    }
+
+    async function loadResults() {
+      clearNotice();
+
+      const hackathonId = $("hackathonSelect").value;
+
+      if (!hackathonId) {
+        results = [];
+        renderResults();
+        return;
+      }
+
+      $("loadResultsBtn").disabled = true;
+      $("loadResultsBtn").textContent = "Loading...";
+
+      try {
+        await loadTeamsForAdmin(hackathonId);
+
+        const data = await apiFetch(
+          `/api/results?hackathon_id=${encodeURIComponent(hackathonId)}`
+        );
+
+        results = data.results || data.data || [];
+        renderResults();
+      } catch (error) {
+        results = [];
+        renderResults();
+        showNotice(error.message || "Could not load results.", "error");
+      } finally {
+        $("loadResultsBtn").disabled = false;
+        $("loadResultsBtn").textContent = "View Results";
+      }
+    }
+
+    function resetResultForm() {
+      editingResultId = null;
+      $("resultForm").reset();
+      $("formHeading").textContent = "Publish a Result";
+      $("saveResultBtn").textContent = "Publish Result";
+      $("cancelEditBtn").classList.add("hidden");
+    }
+
+    function editResult(resultId) {
+      const result = results.find(
+        item => String(item.id) === String(resultId)
+      );
+
+      if (!result) {
+        showNotice("Could not find that result.", "error");
+        return;
+      }
+
+      editingResultId = result.id;
+      $("teamSelect").value = String(result.lineup_id ?? result.team_id ?? "");
+      $("placement").value = String(result.placement ?? 1);
+      $("award").value = result.award || "";
+      $("notes").value = result.notes || result.description || "";
+
+      $("formHeading").textContent = "Edit Result";
+      $("saveResultBtn").textContent = "Save Changes";
+      $("cancelEditBtn").classList.remove("hidden");
+
+      $("adminSection").scrollIntoView({ behavior: "smooth" });
+    }
+
+    async function saveResult(event) {
+      event.preventDefault();
+      clearNotice();
+
+      if (!isAdmin()) {
+        showNotice("Only administrators can publish results.", "error");
+        return;
+      }
+
+      const hackathonId = $("hackathonSelect").value;
+      const lineupId = $("teamSelect").value;
+
+      if (!hackathonId || !lineupId) {
+        showNotice("Select a hackathon and a team.", "error");
+        return;
+      }
+
+      const payload = {
+        hackathon_id: Number(hackathonId),
+        lineup_id: Number(lineupId),
+        placement: Number($("placement").value),
+        award: $("award").value.trim(),
+        notes: $("notes").value.trim()
+      };
+
+      $("saveResultBtn").disabled = true;
+      $("saveResultBtn").textContent = "Saving...";
+
+      try {
+        if (editingResultId !== null) {
+          await apiFetch(`/api/results/${encodeURIComponent(editingResultId)}`, {
+            method: "PUT",
+            body: JSON.stringify(payload)
+          });
+        } else {
+          await apiFetch("/api/results", {
+            method: "POST",
+            body: JSON.stringify(payload)
+          });
+        }
+
+        resetResultForm();
+        await loadResults();
+        showNotice("Result saved successfully.");
+      } catch (error) {
+        showNotice(error.message || "Could not save result.", "error");
+      } finally {
+        $("saveResultBtn").disabled = false;
+
+        if (editingResultId === null) {
+          $("saveResultBtn").textContent = "Publish Result";
+        }
+      }
+    }
+
+    async function deleteResult(resultId) {
+      if (!isAdmin()) return;
+
+      if (!confirm("Permanently delete this result?")) return;
+
+      clearNotice();
+
+      try {
+        await apiFetch(`/api/results/${encodeURIComponent(resultId)}`, {
+          method: "DELETE"
+        });
+
+        await loadResults();
+        showNotice("Result deleted successfully.");
+      } catch (error) {
+        showNotice(error.message || "Could not delete result.", "error");
+      }
+    }
+
+    async function logout() {
+      try {
+        await apiFetch("/api/auth/logout", { method: "POST" });
+      } finally {
+        window.location.href = "login.html";
+      }
+    }
+
+    async function initialize() {
+      try {
+        const authData = await apiFetch("/api/auth/me");
+        currentUser = authData.user || authData;
+
+        if (currentUser.id == null && currentUser.user_id == null) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        if (isAdmin()) {
+          $("adminSection").classList.remove("hidden");
+        }
+
+        await loadHackathons();
+
+        const params = new URLSearchParams(window.location.search);
+        const requestedHackathon = params.get("hackathon_id");
+
+        if (requestedHackathon) {
+          $("hackathonSelect").value = requestedHackathon;
+          await loadResults();
+        } else {
+          renderResults();
+        }
+      } catch (error) {
+        showNotice(error.message || "Could not initialize the results page.", "error");
+      }
+    }
+
+    $("loadResultsBtn").addEventListener("click", loadResults);
+
+    $("hackathonSelect").addEventListener("change", async () => {
+      resetResultForm();
+      results = [];
+      renderResults();
+
+      if ($("hackathonSelect").value) {
+        try {
+          await loadTeamsForAdmin($("hackathonSelect").value);
+        } catch (error) {
+          showNotice(error.message || "Could not load teams.", "error");
+        }
+      }
+    });
+
+    $("resultForm").addEventListener("submit", saveResult);
+    $("cancelEditBtn").addEventListener("click", resetResultForm);
+    $("logoutBtn").addEventListener("click", logout);
+
+    document.addEventListener("click", event => {
+      const button = event.target.closest("[data-action]");
+      if (!button) return;
+
+      if (button.dataset.action === "edit") {
+        editResult(button.dataset.id);
+      }
+
+      if (button.dataset.action === "delete") {
+        deleteResult(button.dataset.id);
+      }
+    });
+
+    initialize();
+  </script>
+</body>
+</html>

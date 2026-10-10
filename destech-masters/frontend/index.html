@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#080b12">
+
+    <title>DesTech Master's | Hack Beyond Limits</title>
+    <meta name="description" content="Manage your hackathon team, track performance, and compete together with DesTech Master's.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            bg: "#080b12",
+                            panel: "#101621",
+                            border: "#222d3d",
+                            cyan: "#00f5d4",
+                            purple: "#a855f7"
+                        }
+                    },
+                    fontFamily: {
+                        sans: ["Inter", "ui-sans-serif", "system-ui"]
+                    },
+                    boxShadow: {
+                        neon: "0 0 25px rgba(0,245,212,0.12)"
+                    }
+                }
+            }
+        };
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #080b12;
+            --cyan: #00f5d4;
+            --purple: #a855f7;
+        }
+
+        * {
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: #e5edf7;
+            font-family: "Inter", sans-serif;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .brand {
+            font-family: "Space Grotesk", sans-serif;
+        }
+
+        a {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .background-grid {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(0,245,212,.045) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,245,212,.045) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: linear-gradient(to bottom, black, transparent 85%);
+        }
+
+        .hero-glow {
+            position: absolute;
+            width: 420px;
+            height: 420px;
+            border-radius: 50%;
+            background: rgba(0,245,212,.09);
+            filter: blur(100px);
+            pointer-events: none;
+        }
+
+        .gradient-text {
+            color: transparent;
+            background: linear-gradient(100deg, #00f5d4 5%, #6ee7f9 48%, #a855f7 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        .neon-button {
+            background: var(--cyan);
+            color: #06110f;
+            transition: transform .25s ease, box-shadow .25s ease;
+        }
+
+        .neon-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 28px rgba(0,245,212,.25);
+        }
+
+        .outline-button {
+            border: 1px solid #354255;
+            transition: border-color .25s ease, background .25s ease;
+        }
+
+        .outline-button:hover {
+            border-color: var(--cyan);
+            background: rgba(0,245,212,.05);
+        }
+
+        .glass-card {
+            background: linear-gradient(145deg, rgba(19,28,42,.94), rgba(12,17,27,.94));
+            border: 1px solid rgba(148,163,184,.13);
+            transition: transform .3s ease, border-color .3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0,245,212,.45);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--cyan);
+            box-shadow: 0 0 12px var(--cyan);
+        }
+
+        .floating {
+            animation: float 5s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(18px);
+            animation: reveal .7s ease forwards;
+        }
+
+        .reveal-delay-1 { animation-delay: .12s; }
+        .reveal-delay-2 { animation-delay: .24s; }
+        .reveal-delay-3 { animation-delay: .36s; }
+
+        @keyframes reveal {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #mobile-menu {
+            transition: opacity .2s ease, transform .2s ease;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                scroll-behavior: auto !important;
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+    <!-- Background effects -->
+    <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
+        <div class="background-grid"></div>
+        <div class="hero-glow -top-48 -left-40"></div>
+        <div class="hero-glow top-96 -right-48"
+             style="background: rgba(168,85,247,.08);"></div>
+    </div>
+
+    <!-- Navigation -->
+    <header class="sticky top-0 z-50 border-b border-white/5 bg-[#080b12]/90 backdrop-blur-xl">
+        <nav class="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8"
+             aria-label="Main navigation">
+
+            <a href="index.html" class="flex items-center gap-3" aria-label="DesTech Master's home">
+                <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-cyan-400/30 bg-cyan-400/10 text-lg font-extrabold text-cyan-300">
+                    D<span class="text-purple-400">T</span>
+                </div>
+                <div>
+                    <div class="brand text-lg font-bold tracking-tight text-white">
+                        DesTech <span class="text-cyan-300">Master's</span>
+                    </div>
+                    <div class="text-[9px] font-semibold uppercase tracking-[.25em] text-slate-500">
+                        Team Command Center
+                    </div>
+                </div>
+            </a>
+
+            <div class="hidden items-center gap-8 md:flex">
+                <a href="#features" class="text-sm text-slate-400 transition hover:text-cyan-300">Features</a>
+                <a href="#workflow" class="text-sm text-slate-400 transition hover:text-cyan-300">How it works</a>
+            </div>
+
+            <!-- Updated by JavaScript based on UI login state -->
+            <div id="desktop-auth" class="hidden items-center gap-3 md:flex">
+                <a href="login.html"
+                   class="rounded-lg px-4 py-2 text-sm font-semibold text-slate-300 transition hover:text-cyan-300">
+                    Login
+                </a>
+                <a href="register.html"
+                   class="neon-button rounded-lg px-5 py-2.5 text-sm font-bold">
+                    Get Started <span aria-hidden="true">↗</span>
+                </a>
+            </div>
+
+            <button id="menu-toggle"
+                    class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-xl text-slate-200 md:hidden"
+                    type="button"
+                    aria-label="Open navigation menu"
+                    aria-expanded="false"
+                    aria-controls="mobile-menu">
+                ☰
+            </button>
+        </nav>
+
+        <!-- Mobile navigation -->
+        <div id="mobile-menu" class="hidden border-t border-white/5 bg-[#0b1019] px-5 py-4 md:hidden">
+            <div class="flex flex-col gap-4">
+                <a href="#features" class="mobile-link text-sm text-slate-300">Features</a>
+                <a href="#workflow" class="mobile-link text-sm text-slate-300">How it works</a>
+                <div id="mobile-auth" class="flex flex-col gap-3 border-t border-white/10 pt-4">
+                    <a href="login.html" class="text-sm text-slate-300">Login</a>
+                    <a href="register.html" class="neon-button rounded-lg px-4 py-3 text-center text-sm font-bold">Get Started ↗</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero -->
+        <section class="relative mx-auto grid max-w-7xl items-center gap-14 px-5 pb-24 pt-20 lg:grid-cols-2 lg:px-8 lg:pb-32 lg:pt-28">
+
+            <div class="relative z-10">
+                <div class="reveal mb-7 inline-flex items-center gap-3 rounded-full border border-cyan-300/20 bg-cyan-300/5 px-4 py-2">
+                    <span class="status-dot"></span>
+                    <span class="text-xs font-semibold tracking-wide text-cyan-200">
+                        YOUR TEAM. YOUR STRATEGY. YOUR LEGACY.
+                    </span>
+                </div>
+
+                <h1 class="reveal reveal-delay-1 max-w-2xl text-5xl font-bold leading-[1.08] tracking-tight text-white sm:text-6xl lg:text-7xl">
+                    Build together.<br>
+                    <span class="gradient-text">Compete smarter.</span>
+                </h1>
+
+                <p class="reveal reveal-delay-2 mt-7 max-w-xl text-base leading-8 text-slate-400 sm:text-lg">
+                    One command center for your hackathon team. Organize events,
+                    build lineups, track results, and turn every competition into
+                    progress.
+                </p>
+
+                <div id="hero-actions" class="reveal reveal-delay-3 mt-9 flex flex-wrap gap-4">
+                    <a href="register.html"
+                       class="neon-button inline-flex items-center gap-3 rounded-xl px-6 py-4 text-sm font-bold">
+                        Get Started <span aria-hidden="true">↗</span>
+                    </a>
+                    <a href="#features"
+                       class="outline-button inline-flex items-center gap-3 rounded-xl px-6 py-4 text-sm font-semibold text-white">
+                        Explore Platform <span aria-hidden="true">↓</span>
+                    </a>
+                </div>
+
+                <div class="reveal reveal-delay-3 mt-12 flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-white/10 pt-7">
+                    <div>
+                        <div class="text-xl font-bold text-white">One hub<span class="text-cyan-300">.</span></div>
+                        <div class="mt-1 text-xs text-slate-500">Team coordination</div>
+                    </div>
+                    <div class="h-9 w-px bg-white/10"></div>
+                    <div>
+                        <div class="text-xl font-bold text-white">Live-ready<span class="text-cyan-300">.</span></div>
+                        <div class="mt-1 text-xs text-slate-500">Event management</div>
+                    </div>
+                    <div class="h-9 w-px bg-white/10"></div>
+                    <div>
+                        <div class="text-xl font-bold text-white">Data-driven<span class="text-cyan-300">.</span></div>
+                        <div class="mt-1 text-xs text-slate-500">Performance tracking</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Decorative dashboard preview -->
+            <div class="relative mx-auto w-full max-w-xl reveal reveal-delay-2">
+                <div class="absolute -inset-5 rounded-3xl bg-cyan-400/5 blur-3xl"></div>
+
+                <div class="glass-card floating relative overflow-hidden rounded-2xl p-5 shadow-neon sm:p-7">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-5">
+                        <div>
+                            <div class="text-xs font-medium uppercase tracking-[.2em] text-slate-500">Command Center</div>
+                            <div class="mt-2 text-xl font-bold text-white">Team Overview</div>
+                        </div>
+                        <div class="rounded-lg border border-cyan-300/20 bg-cyan-300/10 px-3 py-2 text-xs font-semibold text-cyan-200">
+                            <span class="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-cyan-300"></span>
+                            Preview
+                        </div>
+                    </div>
+
+                    <div class="mt-5 grid grid-cols-2 gap-3">
+                        <div class="rounded-xl border border-white/5 bg-white/[.025] p-4">
+                            <div class="text-xs text-slate-500">Hackathons</div>
+                            <div class="mt-3 text-3xl font-bold text-white">--</div>
+                            <div class="mt-1 text-xs text-slate-500">Events tracked</div>
+                        </div>
+                        <div class="rounded-xl border border-white/5 bg-white/[.025] p-4">
+                            <div class="text-xs text-slate-500">Team Wins</div>
+                            <div class="mt-3 text-3xl font-bold text-cyan-300">--</div>
+                            <div class="mt-1 text-xs text-slate-500">Results recorded</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 rounded-xl border border-white/5 bg-white/[.025] p-4">
+                        <div class="flex items-center justify-between">
+                            <div class="text-sm font-semibold text-white">Competition activity</div>
+                            <span class="text-xs text-slate-500">Your team</span>
+                        </div>
+                        <div class="mt-6 flex h-28 items-end justify-around gap-3 px-2">
+                            <div class="h-[30%] w-full rounded-t-md bg-cyan-300/20"></div>
+                            <div class="h-[48%] w-full rounded-t-md bg-cyan-300/30"></div>
+                            <div class="h-[38%] w-full rounded-t-md bg-cyan-300/20"></div>
+                            <div class="h-[70%] w-full rounded-t-md bg-gradient-to-t from-cyan-500/30 to-cyan-300/70"></div>
+                            <div class="h-[58%] w-full rounded-t-md bg-cyan-300/30"></div>
+                            <div class="h-[90%] w-full rounded-t-md bg-gradient-to-t from-purple-500/30 to-purple-400/70"></div>
+                            <div class="h-[76%] w-full rounded-t-md bg-cyan-300/40"></div>
+                        </div>
+                        <div class="mt-3 flex justify-between text-[10px] text-slate-600">
+                            <span>ACTIVITY PREVIEW</span>
+                            <span>DEMO GRAPH</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex items-center gap-3 rounded-xl border border-purple-400/15 bg-purple-400/5 p-4">
+                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-purple-400/10 text-lg text-purple-300">⌘</div>
+                        <div>
+                            <div class="text-sm font-semibold text-white">Ready for the next challenge?</div>
+                            <div class="mt-1 text-xs text-slate-500">Plan your lineup and keep your team in sync.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="absolute -right-3 top-14 hidden rounded-xl border border-cyan-300/20 bg-[#101923] p-3 shadow-xl sm:block">
+                    <div class="text-[10px] uppercase tracking-wider text-slate-500">Team status</div>
+                    <div class="mt-1 flex items-center gap-2 text-xs font-semibold text-cyan-200">
+                        <span class="status-dot"></span> Ready to build
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section id="features" class="border-y border-white/5 bg-white/[.015]">
+            <div class="mx-auto max-w-7xl px-5 py-24 lg:px-8">
+                <div class="mx-auto max-w-2xl text-center">
+                    <div class="text-xs font-bold uppercase tracking-[.25em] text-cyan-300">Built for teams that compete</div>
+                    <h2 class="mt-4 text-3xl font-bold text-white sm:text-4xl">
+                        Everything in <span class="gradient-text">one place.</span>
+                    </h2>
+                    <p class="mt-5 leading-7 text-slate-400">
+                        Spend less time organizing information and more time building great projects.
+                    </p>
+                </div>
+
+                <div class="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                    <article class="glass-card rounded-2xl p-7">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-xl border border-cyan-300/20 bg-cyan-300/10 text-2xl text-cyan-300">◈</div>
+                        <h3 class="mt-6 text-lg font-bold text-white">Hackathon Management</h3>
+                        <p class="mt-3 text-sm leading-7 text-slate-400">
+                            Keep event dates, venues, registration details, and results organized in one place.
+                        </p>
+                    </article>
+
+                    <article class="glass-card rounded-2xl p-7">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-xl border border-purple-400/20 bg-purple-400/10 text-2xl text-purple-300">⌘</div>
+                        <h3 class="mt-6 text-lg font-bold text-white">Smart Team Lineups</h3>
+                        <p class="mt-3 text-sm leading-7 text-slate-400">
+                            Coordinate member availability and plan the right lineup for each competition.
+                        </p>
+                    </article>
+
+                    <article class="glass-card rounded-2xl p-7">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-xl border border-cyan-300/20 bg-cyan-300/10 text-2xl text-cyan-300">↗</div>
+                        <h3 class="mt-6 text-lg font-bold text-white">Performance Tracking</h3>
+                        <p class="mt-3 text-sm leading-7 text-slate-400">
+                            Record participation, wins, competition history, and team progress over time.
+                        </p>
+                    </article>
+
+                    <article class="glass-card rounded-2xl p-7">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-xl border border-purple-400/20 bg-purple-400/10 text-2xl text-purple-300">◎</div>
+                        <h3 class="mt-6 text-lg font-bold text-white">Member Profiles</h3>
+                        <p class="mt-3 text-sm leading-7 text-slate-400">
+                            Give each teammate a place to view their profile, activity, and competition stats.
+                        </p>
+                    </article>
+
+                    <article class="glass-card rounded-2xl p-7">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-xl border border-cyan-300/20 bg-cyan-300/10 text-2xl text-cyan-300">▤</div>
+                        <h3 class="mt-6 text-lg font-bold text-white">Admin Control</h3>
+                        <p class="mt-3 text-sm leading-7 text-slate-400">
+                            Give authorized admins tools to manage events, team members, lineups, and outcomes.
+                        </p>
+                    </article>
+
+                    <article class="glass-card rounded-2xl p-7">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-xl border border-purple-400/20 bg-purple-400/10 text-2xl text-purple-300">⌁</div>
+                        <h3 class="mt-6 text-lg font-bold text-white">Competitive Growth</h3>
+                        <p class="mt-3 text-sm leading-7 text-slate-400">
+                            Build a history of your team's journey and identify areas to improve together.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Workflow -->
+        <section id="workflow" class="mx-auto max-w-7xl px-5 py-24 lg:px-8">
+            <div class="grid items-center gap-12 lg:grid-cols-2">
+                <div>
+                    <div class="text-xs font-bold uppercase tracking-[.25em] text-cyan-300">A simpler workflow</div>
+                    <h2 class="mt-4 text-3xl font-bold leading-tight text-white sm:text-4xl">
+                        From planning to podium.
+                    </h2>
+                    <p class="mt-5 leading-8 text-slate-400">
+                        A clear workflow helps everyone know what is happening, who is participating,
+                        and how the team is performing.
+                    </p>
+
+                    <a href="register.html" id="workflow-cta"
+                       class="neon-button mt-8 inline-flex items-center gap-3 rounded-xl px-6 py-4 text-sm font-bold">
+                        Join Your Team <span aria-hidden="true">↗</span>
+                    </a>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="glass-card flex gap-5 rounded-xl p-5">
+                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-300/10 font-bold text-cyan-300">01</div>
+                        <div>
+                            <h3 class="font-bold text-white">Organize</h3>
+                            <p class="mt-2 text-sm leading-6 text-slate-400">Add competitions, dates, locations, and important event details.</p>
+                        </div>
+                    </div>
+                    <div class="glass-card flex gap-5 rounded-xl p-5">
+                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-purple-400/10 font-bold text-purple-300">02</div>
+                        <div>
+                            <h3 class="font-bold text-white">Coordinate</h3>
+                            <p class="mt-2 text-sm leading-6 text-slate-400">Check availability and assign the lineup for each event.</p>
+                        </div>
+                    </div>
+                    <div class="glass-card flex gap-5 rounded-xl p-5">
+                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-300/10 font-bold text-cyan-300">03</div>
+                        <div>
+                            <h3 class="font-bold text-white">Improve</h3>
+                            <p class="mt-2 text-sm leading-6 text-slate-400">Record outcomes and track your team's progress over time.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to action -->
+        <section class="px-5 pb-24">
+            <div class="relative mx-auto max-w-5xl overflow-hidden rounded-3xl border border-cyan-300/15 bg-gradient-to-br from-cyan-300/[.08] via-[#101621] to-purple-500/[.08] px-6 py-14 text-center sm:px-12 sm:py-16">
+                <div class="absolute -right-20 -top-24 h-64 w-64 rounded-full bg-purple-500/10 blur-3xl" aria-hidden="true"></div>
+                <div class="relative">
+                    <div class="text-xs font-bold uppercase tracking-[.25em] text-cyan-300">Your next chapter starts here</div>
+                    <h2 class="mt-5 text-3xl font-bold text-white sm:text-5xl">
+                        Make every competition count.
+                    </h2>
+                    <p class="mx-auto mt-5 max-w-xl leading-7 text-slate-400">
+                        Bring your people, your ideas, and your competitive spirit together.
+                    </p>
+                    <a href="register.html" id="bottom-cta"
+                       class="neon-button mt-8 inline-flex items-center gap-3 rounded-xl px-7 py-4 text-sm font-bold">
+                        Get Started <span aria-hidden="true">↗</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/5">
+        <div class="mx-auto flex max-w-7xl flex-col gap-5 px-5 py-8 sm:flex-row sm:items-center sm:justify-between lg:px-8">
+            <a href="index.html" class="brand text-sm font-bold text-white">
+                DesTech <span class="text-cyan-300">Master's</span>
+            </a>
+            <p class="text-xs text-slate-500">
+                Built for the builders, dreamers, and competitors.
+            </p>
+            <p class="text-xs text-slate-600">
+                © <span id="current-year"></span> DesTech Master's
+            </p>
+        </div>
+    </footer>
+
+    <!-- Shared UI session helpers for this page -->
+    <script>
+        /*
+         * Prototype UI state only.
+         *
+         * Do not store passwords, access tokens, or real credentials in
+         * localStorage. This helper only reads a basic user display record.
+         *
+         * Later, login.html will set this record after successful backend
+         * authentication. Flask + MySQL must validate the actual account.
+         */
+        const AppSession = (() => {
+            const USER_KEY = "destm_user";
+
+            function getUser() {
+                try {
+                    const raw = localStorage.getItem(USER_KEY);
+                    if (!raw) return null;
+
+                    const user = JSON.parse(raw);
+
+                    if (
+                        !user ||
+                        typeof user !== "object" ||
+                        typeof user.name !== "string" ||
+                        typeof user.role !== "string" ||
+                        !["admin", "member"].includes(user.role)
+                    ) {
+                        localStorage.removeItem(USER_KEY);
+                        return null;
+                    }
+
+                    return user;
+                } catch (error) {
+                    return null;
+                }
+            }
+
+            function isLoggedIn() {
+                return getUser() !== null;
+            }
+
+            function logout() {
+                localStorage.removeItem(USER_KEY);
+                window.location.href = "index.html";
+            }
+
+            return { getUser, isLoggedIn, logout };
+        })();
+
+        // Update authentication links without duplicating navigation markup.
+        function renderNavigation() {
+            const user = AppSession.getUser();
+            const desktopAuth = document.getElementById("desktop-auth");
+            const mobileAuth = document.getElementById("mobile-auth");
+            const heroActions = document.getElementById("hero-actions");
+            const workflowCta = document.getElementById("workflow-cta");
+            const bottomCta = document.getElementById("bottom-cta");
+
+            if (!user) {
+                desktopAuth.classList.remove("hidden");
+                desktopAuth.classList.add("md:flex");
+                return;
+            }
+
+            const dashboardHref = user.role === "admin"
+                ? "admin.html"
+                : "dashboard.html";
+
+            const safeName = user.name
+                .replace(/[<>&"']/g, "")
+                .trim()
+                .slice(0, 40) || "Teammate";
+
+            const authLinks = `
+                <span class="text-sm text-slate-400">
+                    Hi, ${safeName}
+                </span>
+                <a href="${dashboardHref}"
+                   class="rounded-lg border border-cyan-300/20 px-4 py-2 text-sm font-semibold text-cyan-200 transition hover:bg-cyan-300/10">
+                    Dashboard
+                </a>
+                <button type="button" data-logout
+                   class="rounded-lg px-3 py-2 text-sm text-slate-400 transition hover:text-white">
+                    Logout
+                </button>
+            `;
+
+            desktopAuth.innerHTML = authLinks;
+            desktopAuth.classList.remove("hidden");
+            desktopAuth.classList.add("md:flex");
+
+            mobileAuth.innerHTML = `
+                <a href="${dashboardHref}"
+                   class="text-sm font-semibold text-cyan-200">
+                    Dashboard
+                </a>
+                <button type="button" data-logout
+                   class="rounded-lg border border-white/10 px-4 py-3 text-left text-sm text-slate-300">
+                    Logout
+                </button>
+            `;
+
+            // A signed-in user doesn't need registration CTAs on this page.
+            [heroActions, workflowCta, bottomCta].forEach(element => {
+                if (element) element.classList.add("hidden");
+            });
+        }
+
+        // Event delegation keeps logout functional even after links are updated.
+        document.addEventListener("click", event => {
+            const logoutButton = event.target.closest("[data-logout]");
+
+            if (logoutButton) {
+                AppSession.logout();
+            }
+        });
+
+        // Mobile menu.
+        const menuToggle = document.getElementById("menu-toggle");
+        const mobileMenu = document.getElementById("mobile-menu");
+
+        menuToggle.addEventListener("click", () => {
+            const isOpen = !mobileMenu.classList.contains("hidden");
+
+            mobileMenu.classList.toggle("hidden", isOpen);
+            menuToggle.setAttribute("aria-expanded", String(!isOpen));
+            menuToggle.setAttribute(
+                "aria-label",
+                isOpen ? "Open navigation menu" : "Close navigation menu"
+            );
+            menuToggle.textContent = isOpen ? "☰" : "✕";
+        });
+
+        // Close the mobile menu after choosing a section link.
+        document.querySelectorAll(".mobile-link").forEach(link => {
+            link.addEventListener("click", () => {
+                mobileMenu.classList.add("hidden");
+                menuToggle.setAttribute("aria-expanded", "false");
+                menuToggle.setAttribute("aria-label", "Open navigation menu");
+                menuToggle.textContent = "☰";
+            });
+        });
+
+        // Footer year and initial page state.
+        document.getElementById("current-year").textContent =
+            new Date().getFullYear();
+
+        renderNavigation();
+
+        // Keep the navbar synchronized if another same-origin page changes UI state.
+        window.addEventListener("pageshow", renderNavigation);
+
+        window.addEventListener("storage", event => {
+            if (event.key === "destm_user") {
+                renderNavigation();
+            }
+        });
+    </script>
+</body>
+</html>

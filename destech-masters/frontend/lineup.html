@@ -1,0 +1,707 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Team Lineups | DesTech Master's</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: #080b14;
+      color: #e5e7eb;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+    }
+    .panel {
+      background: rgba(17, 24, 39, 0.88);
+      border: 1px solid rgba(34, 211, 238, 0.22);
+      border-radius: 16px;
+      box-shadow: 0 0 24px rgba(34, 211, 238, 0.04);
+    }
+    .neon {
+      color: #67e8f9;
+      text-shadow: 0 0 12px rgba(34, 211, 238, 0.25);
+    }
+    .field {
+      width: 100%;
+      color: #f3f4f6;
+      background: #0b1120;
+      border: 1px solid #374151;
+      border-radius: 9px;
+      padding: 11px 12px;
+      outline: none;
+    }
+    .field:focus {
+      border-color: #22d3ee;
+      box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.12);
+    }
+    .field option {
+      background: #0b1120;
+    }
+    .btn {
+      border-radius: 9px;
+      padding: 10px 14px;
+      font-weight: 700;
+      transition: 0.18s;
+      cursor: pointer;
+    }
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .btn-primary {
+      background: #22d3ee;
+      color: #07111c;
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: #67e8f9;
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: #312e81;
+      color: #e0e7ff;
+      border: 1px solid #6366f1;
+    }
+    .btn-secondary:hover:not(:disabled) {
+      background: #4338ca;
+    }
+    .btn-danger {
+      color: #fecaca;
+      background: rgba(127, 29, 29, 0.35);
+      border: 1px solid #991b1b;
+    }
+    .btn-danger:hover:not(:disabled) {
+      background: rgba(153, 27, 27, 0.55);
+    }
+    .btn-muted {
+      color: #d1d5db;
+      background: #1f2937;
+      border: 1px solid #4b5563;
+    }
+    .btn-muted:hover:not(:disabled) {
+      background: #374151;
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 12px;
+      border: 1px solid rgba(34, 211, 238, 0.3);
+      color: #a5f3fc;
+      background: rgba(8, 145, 178, 0.12);
+    }
+    .muted {
+      color: #9ca3af;
+    }
+    .member-chip {
+      display: inline-block;
+      background: #1f2937;
+      border: 1px solid #374151;
+      border-radius: 999px;
+      padding: 4px 9px;
+      margin: 3px 4px 3px 0;
+      font-size: 12px;
+      color: #d1d5db;
+      overflow-wrap: anywhere;
+    }
+    .notice {
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .notice-error {
+      background: rgba(127, 29, 29, 0.3);
+      border: 1px solid #991b1b;
+      color: #fecaca;
+    }
+    .notice-success {
+      background: rgba(6, 78, 59, 0.3);
+      border: 1px solid #047857;
+      color: #a7f3d0;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen">
+  <header class="border-b border-cyan-900/60 bg-gray-950/90">
+    <div class="max-w-7xl mx-auto px-5 py-4 flex flex-wrap items-center justify-between gap-4">
+      <a href="index.html" class="text-xl font-black tracking-wide neon">
+        DesTech Master's
+      </a>
+      <nav class="flex flex-wrap items-center gap-4 text-sm">
+        <a href="dashboard.html" class="text-gray-300 hover:text-cyan-300">Dashboard</a>
+        <a href="hackathons.html" class="text-gray-300 hover:text-cyan-300">Hackathons</a>
+        <a href="lineup.html" class="text-cyan-300 font-bold">Team Lineups</a>
+        <a href="results.html" class="text-gray-300 hover:text-cyan-300">Results</a>
+        <a href="profile.html" class="text-gray-300 hover:text-cyan-300">Profile</a>
+        <button id="logoutBtn" class="text-rose-300 hover:text-rose-200">Logout</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-5 py-8">
+    <div class="mb-8">
+      <p class="text-cyan-400 uppercase tracking-[0.25em] text-xs font-bold mb-2">
+        Collaboration Hub
+      </p>
+      <h1 class="text-3xl md:text-4xl font-black mb-3">
+        Team <span class="neon">Lineups</span>
+      </h1>
+      <p class="muted max-w-2xl">
+        Build a team, discover other teams competing in a hackathon, and manage
+        your membership.
+      </p>
+    </div>
+
+    <div id="notice" class="notice" role="status"></div>
+
+    <section class="grid lg:grid-cols-2 gap-6 mb-8">
+      <div class="panel p-6">
+        <h2 class="text-xl font-bold mb-1">Create a Team</h2>
+        <p class="muted text-sm mb-5">
+          Choose a hackathon and invite registered users by email.
+        </p>
+
+        <form id="createForm" class="space-y-4">
+          <div>
+            <label for="teamName" class="block text-sm mb-2">Team name *</label>
+            <input id="teamName" class="field" maxlength="100"
+              placeholder="e.g. Quantum Builders" required />
+          </div>
+
+          <div>
+            <label for="createHackathon" class="block text-sm mb-2">Hackathon *</label>
+            <select id="createHackathon" class="field" required>
+              <option value="">Loading hackathons...</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="teamDescription" class="block text-sm mb-2">Description</label>
+            <textarea id="teamDescription" class="field" rows="3" maxlength="500"
+              placeholder="What are you planning to build?"></textarea>
+          </div>
+
+          <div>
+            <label for="memberEmails" class="block text-sm mb-2">
+              Invite members by email
+            </label>
+            <textarea id="memberEmails" class="field" rows="2"
+              placeholder="member1@example.com, member2@example.com"></textarea>
+            <p class="muted text-xs mt-2">
+              Separate multiple emails with commas or new lines. Users must already be registered.
+            </p>
+          </div>
+
+          <button id="createBtn" class="btn btn-primary w-full" type="submit">
+            Create Team
+          </button>
+        </form>
+      </div>
+
+      <div class="panel p-6">
+        <h2 class="text-xl font-bold mb-1">Discover Teams</h2>
+        <p class="muted text-sm mb-5">
+          Find teams created by other users for a particular hackathon.
+        </p>
+
+        <div class="space-y-4">
+          <div>
+            <label for="discoverHackathon" class="block text-sm mb-2">
+              Select hackathon
+            </label>
+            <select id="discoverHackathon" class="field">
+              <option value="">Loading hackathons...</option>
+            </select>
+          </div>
+
+          <button id="discoverBtn" class="btn btn-secondary w-full" type="button">
+            Find Teams
+          </button>
+
+          <div id="discoveryStatus" class="muted text-sm" aria-live="polite">
+            Select a hackathon to discover teams.
+          </div>
+
+          <div id="discoveredTeams" class="space-y-4"></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="flex flex-wrap items-end justify-between gap-4 mb-5">
+        <div>
+          <h2 class="text-2xl font-black">Your Teams</h2>
+          <p class="muted text-sm mt-1">
+            Teams you created or have joined.
+          </p>
+        </div>
+        <div class="w-full sm:w-72">
+          <label for="searchInput" class="block text-xs muted mb-2">Search teams</label>
+          <input id="searchInput" class="field" placeholder="Search by team or hackathon..." />
+        </div>
+      </div>
+
+      <div id="myTeams" class="grid md:grid-cols-2 xl:grid-cols-3 gap-5"></div>
+    </section>
+  </main>
+
+  <footer class="text-center muted text-xs py-8 px-4">
+    DesTech Master's · Team collaboration
+  </footer>
+
+  <script>
+    const API_BASE = "http://127.0.0.1:5000";
+
+    let currentUser = null;
+    let hackathons = [];
+    let myLineups = [];
+    let discoveredLineups = [];
+    let selectedHackathonId = "";
+
+    const $ = (id) => document.getElementById(id);
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      })[char]);
+    }
+
+    function showNotice(message, type = "success") {
+      const notice = $("notice");
+      notice.textContent = message;
+      notice.className = `notice ${type === "error" ? "notice-error" : "notice-success"}`;
+      notice.style.display = "block";
+      notice.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    function clearNotice() {
+      $("notice").style.display = "none";
+      $("notice").textContent = "";
+    }
+
+    async function apiFetch(path, options = {}) {
+      const config = {
+        ...options,
+        credentials: "include",
+        headers: {
+          ...(options.body ? { "Content-Type": "application/json" } : {}),
+          ...(options.headers || {})
+        }
+      };
+
+      let response;
+      try {
+        response = await fetch(`${API_BASE}${path}`, config);
+      } catch (error) {
+        throw new Error(
+          "Cannot connect to the backend. Make sure Flask is running on port 5000."
+        );
+      }
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || data.success === false) {
+        throw new Error(data.message || `Request failed (${response.status}).`);
+      }
+
+      return data;
+    }
+
+    function getUserId(user) {
+      return user?.id ?? user?.user_id ?? null;
+    }
+
+    function getHackathonTitle(hackathonId) {
+      const found = hackathons.find(
+        h => String(h.id) === String(hackathonId)
+      );
+      return found?.title || found?.name || `Hackathon #${hackathonId}`;
+    }
+
+    function renderHackathonOptions() {
+      const options = hackathons.map(h => {
+        const id = h.id;
+        const title = h.title || h.name || `Hackathon #${id}`;
+        return `<option value="${escapeHtml(id)}">${escapeHtml(title)}</option>`;
+      }).join("");
+
+      const placeholder = '<option value="">Select a hackathon</option>';
+      $("createHackathon").innerHTML = placeholder + options;
+      $("discoverHackathon").innerHTML = placeholder + options;
+    }
+
+    async function loadHackathons() {
+      const data = await apiFetch("/api/hackathons");
+      hackathons = data.hackathons || data.data || [];
+      renderHackathonOptions();
+    }
+
+    function isCreator(lineup) {
+      return String(lineup.created_by) === String(getUserId(currentUser));
+    }
+
+    function isAdmin() {
+      return String(currentUser?.role || "").toLowerCase() === "admin";
+    }
+
+    function isMember(lineup) {
+      return myLineups.some(item => String(item.id) === String(lineup.id));
+    }
+
+    function getMembers(lineup) {
+      if (Array.isArray(lineup.members)) {
+        return lineup.members.map(member => {
+          if (typeof member === "string") return member;
+          return member.full_name || member.name || member.email || "Member";
+        });
+      }
+
+      if (Array.isArray(lineup.member_names)) {
+        return lineup.member_names;
+      }
+
+      return [];
+    }
+
+    function renderMemberChips(lineup) {
+      const members = getMembers(lineup);
+
+      if (!members.length) {
+        return '<p class="muted text-sm">Member details unavailable.</p>';
+      }
+
+      return members.map(name =>
+        `<span class="member-chip">${escapeHtml(name)}</span>`
+      ).join("");
+    }
+
+    function renderMyTeams() {
+      const container = $("myTeams");
+      const query = $("searchInput").value.trim().toLowerCase();
+
+      const filtered = myLineups.filter(lineup => {
+        const title = getHackathonTitle(lineup.hackathon_id);
+        return `${lineup.team_name || ""} ${title} ${lineup.description || ""}`
+          .toLowerCase().includes(query);
+      });
+
+      if (!filtered.length) {
+        container.innerHTML = `
+          <div class="panel p-6 md:col-span-2 xl:col-span-3">
+            <p class="font-semibold mb-1">No teams found</p>
+            <p class="muted text-sm">
+              Create a team or discover and join an existing one.
+            </p>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(lineup => {
+        const creator = isCreator(lineup);
+        const canDelete = creator || isAdmin();
+
+        return `
+          <article class="panel p-5 flex flex-col">
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <h3 class="text-lg font-bold break-words">
+                ${escapeHtml(lineup.team_name)}
+              </h3>
+              <span class="tag shrink-0">${creator ? "Creator" : "Member"}</span>
+            </div>
+
+            <p class="text-cyan-200 text-sm mb-2">
+              ${escapeHtml(getHackathonTitle(lineup.hackathon_id))}
+            </p>
+
+            <p class="muted text-sm mb-4 whitespace-pre-wrap break-words">
+              ${escapeHtml(lineup.description || "No description provided.")}
+            </p>
+
+            <div class="mb-4">
+              <p class="text-xs uppercase tracking-wider muted mb-2">Members</p>
+              ${renderMemberChips(lineup)}
+            </div>
+
+            <div class="mt-auto pt-3 border-t border-gray-800 flex flex-wrap gap-2">
+              ${creator
+                ? `<button class="btn btn-danger text-sm" data-action="delete" data-id="${escapeHtml(lineup.id)}">Delete Team</button>`
+                : `<button class="btn btn-muted text-sm" data-action="leave" data-id="${escapeHtml(lineup.id)}">Leave Team</button>`
+              }
+              ${canDelete && !creator
+                ? `<button class="btn btn-danger text-sm" data-action="delete" data-id="${escapeHtml(lineup.id)}">Delete Team (Admin)</button>`
+                : ""
+              }
+            </div>
+          </article>`;
+      }).join("");
+    }
+
+    function renderDiscoveredTeams() {
+      const container = $("discoveredTeams");
+
+      if (!discoveredLineups.length) {
+        container.innerHTML = "";
+        return;
+      }
+
+      container.innerHTML = discoveredLineups.map(lineup => {
+        const creator = isCreator(lineup);
+        const joined = isMember(lineup);
+        const canDelete = creator || isAdmin();
+        const memberCount = Number(lineup.member_count || 0);
+
+        let actionButton = "";
+
+        if (canDelete) {
+          actionButton = `
+            <button class="btn btn-danger text-sm"
+              data-action="delete" data-id="${escapeHtml(lineup.id)}">
+              Delete Team
+            </button>`;
+        } else if (joined && !creator) {
+          actionButton = `
+            <button class="btn btn-muted text-sm"
+              data-action="leave" data-id="${escapeHtml(lineup.id)}">
+              Leave Team
+            </button>`;
+        } else if (!joined) {
+          actionButton = `
+            <button class="btn btn-primary text-sm"
+              data-action="join" data-id="${escapeHtml(lineup.id)}">
+              Join Team
+            </button>`;
+        }
+
+        return `
+          <article class="rounded-xl border border-gray-700 bg-gray-950/70 p-4">
+            <div class="flex justify-between items-start gap-3 mb-2">
+              <h3 class="font-bold break-words">${escapeHtml(lineup.team_name)}</h3>
+              <span class="tag shrink-0">${memberCount} member${memberCount === 1 ? "" : "s"}</span>
+            </div>
+            <p class="text-xs text-cyan-200 mb-2">
+              Created by ${escapeHtml(lineup.creator_name || "Team creator")}
+            </p>
+            <p class="muted text-sm mb-3 whitespace-pre-wrap break-words">
+              ${escapeHtml(lineup.description || "No description provided.")}
+            </p>
+            <div class="flex flex-wrap gap-2">${actionButton}</div>
+          </article>`;
+      }).join("");
+    }
+
+    async function loadLineups() {
+      const data = await apiFetch("/api/lineups");
+      myLineups = data.lineups || data.data || [];
+      renderMyTeams();
+      renderDiscoveredTeams();
+    }
+
+    async function discoverTeams() {
+      clearNotice();
+
+      const hackathonId = $("discoverHackathon").value;
+      selectedHackathonId = hackathonId;
+
+      if (!hackathonId) {
+        $("discoveryStatus").textContent = "Select a hackathon first.";
+        discoveredLineups = [];
+        renderDiscoveredTeams();
+        return;
+      }
+
+      $("discoveryStatus").textContent = "Searching for teams...";
+      $("discoverBtn").disabled = true;
+
+      try {
+        const data = await apiFetch(
+          `/api/hackathons/${encodeURIComponent(hackathonId)}/lineups`
+        );
+
+        discoveredLineups = data.lineups || data.teams || [];
+        $("discoveryStatus").textContent = discoveredLineups.length
+          ? `${discoveredLineups.length} team(s) found.`
+          : "No teams found for this hackathon yet.";
+
+        renderDiscoveredTeams();
+      } catch (error) {
+        $("discoveryStatus").textContent = "Could not load teams.";
+        showNotice(error.message, "error");
+      } finally {
+        $("discoverBtn").disabled = false;
+      }
+    }
+
+    async function createTeam(event) {
+      event.preventDefault();
+      clearNotice();
+
+      const teamName = $("teamName").value.trim();
+      const hackathonId = $("createHackathon").value;
+      const description = $("teamDescription").value.trim();
+      const emails = $("memberEmails").value
+        .split(/[\n,;]+/)
+        .map(email => email.trim())
+        .filter(Boolean);
+
+      if (!teamName || !hackathonId) {
+        showNotice("Enter a team name and select a hackathon.", "error");
+        return;
+      }
+
+      $("createBtn").disabled = true;
+      $("createBtn").textContent = "Creating...";
+
+      try {
+        await apiFetch("/api/lineups", {
+          method: "POST",
+          body: JSON.stringify({
+            team_name: teamName,
+            hackathon_id: Number(hackathonId),
+            description,
+            member_emails: emails
+          })
+        });
+
+        $("createForm").reset();
+
+        await loadLineups();
+
+        if ($("discoverHackathon").value === hackathonId) {
+          await discoverTeams();
+        }
+
+        showNotice("Team created successfully.");
+      } catch (error) {
+        showNotice(error.message || "Could not create the team.", "error");
+      } finally {
+        $("createBtn").disabled = false;
+        $("createBtn").textContent = "Create Team";
+      }
+    }
+
+    async function joinTeam(lineupId) {
+      clearNotice();
+
+      try {
+        await apiFetch(`/api/lineups/${encodeURIComponent(lineupId)}/join`, {
+          method: "POST",
+          body: JSON.stringify({})
+        });
+
+        await loadLineups();
+        await discoverTeams();
+        showNotice("You have joined the team.");
+      } catch (error) {
+        showNotice(error.message || "Could not join the team.", "error");
+      }
+    }
+
+    async function leaveTeam(lineupId) {
+      clearNotice();
+
+      if (!confirm("Are you sure you want to leave this team?")) return;
+
+      try {
+        await apiFetch(`/api/lineups/${encodeURIComponent(lineupId)}/leave`, {
+          method: "POST",
+          body: JSON.stringify({})
+        });
+
+        await loadLineups();
+
+        if ($("discoverHackathon").value) {
+          await discoverTeams();
+        }
+
+        showNotice("You have left the team.");
+      } catch (error) {
+        showNotice(error.message || "Could not leave the team.", "error");
+      }
+    }
+
+    async function deleteTeam(lineupId) {
+      clearNotice();
+
+      if (!confirm(
+        "Delete this team permanently? All team membership records will also be removed."
+      )) return;
+
+      try {
+        await apiFetch(`/api/lineups/${encodeURIComponent(lineupId)}`, {
+          method: "DELETE"
+        });
+
+        await loadLineups();
+
+        if ($("discoverHackathon").value) {
+          await discoverTeams();
+        }
+
+        showNotice("Team deleted successfully.");
+      } catch (error) {
+        showNotice(error.message || "Could not delete the team.", "error");
+      }
+    }
+
+    async function logout() {
+      try {
+        await apiFetch("/api/auth/logout", { method: "POST" });
+      } finally {
+        window.location.href = "login.html";
+      }
+    }
+
+    async function initialize() {
+      try {
+        const authData = await apiFetch("/api/auth/me");
+        currentUser = authData.user || authData;
+
+        if (!getUserId(currentUser)) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        await loadHackathons();
+        await loadLineups();
+
+        $("discoveryStatus").textContent =
+          "Select a hackathon to discover teams.";
+      } catch (error) {
+        showNotice(error.message || "Please log in to access team lineups.", "error");
+
+        if (/log in|login|unauthorized|authentication/i.test(error.message)) {
+          setTimeout(() => {
+            window.location.href = "login.html";
+          }, 1000);
+        }
+      }
+    }
+
+    $("createForm").addEventListener("submit", createTeam);
+    $("discoverBtn").addEventListener("click", discoverTeams);
+    $("searchInput").addEventListener("input", renderMyTeams);
+    $("logoutBtn").addEventListener("click", logout);
+
+    document.addEventListener("click", event => {
+      const button = event.target.closest("[data-action]");
+      if (!button) return;
+
+      const action = button.dataset.action;
+      const id = button.dataset.id;
+
+      if (action === "join") joinTeam(id);
+      if (action === "leave") leaveTeam(id);
+      if (action === "delete") deleteTeam(id);
+    });
+
+    initialize();
+  </script>
+</body>
+</html>

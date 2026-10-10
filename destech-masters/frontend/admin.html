@@ -1,0 +1,703 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | DesTech Masters</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --cyan: #00f5ff;
+      --purple: #a855f7;
+      --bg: #070914;
+      --panel: #101426;
+      --muted: #919ab5;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: #edf2ff;
+      background:
+        radial-gradient(ellipse at 10% 0%, #142448 0%, transparent 35%),
+        radial-gradient(ellipse at 90% 10%, #24123d 0%, transparent 32%),
+        var(--bg);
+      font-family: Inter, sans-serif;
+    }
+
+    .brand, h1, h2, h3 { font-family: Orbitron, sans-serif; }
+
+    .glass {
+      background: rgba(16, 20, 38, .88);
+      border: 1px solid rgba(148, 163, 184, .15);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, .18);
+      backdrop-filter: blur(14px);
+    }
+
+    .neon-text {
+      color: var(--cyan);
+      text-shadow: 0 0 16px rgba(0, 245, 255, .24);
+    }
+
+    .neon-button {
+      color: #061018;
+      background: linear-gradient(100deg, var(--cyan), #67e8f9);
+      font-weight: 800;
+      transition: .2s;
+    }
+
+    .neon-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 22px rgba(0, 245, 255, .25);
+    }
+
+    .field {
+      width: 100%;
+      color: #edf2ff;
+      background: #090d1c;
+      border: 1px solid #29324d;
+      border-radius: 10px;
+      padding: 11px 12px;
+      outline: none;
+      transition: border .2s;
+    }
+
+    .field:focus { border-color: var(--cyan); }
+    .field::placeholder { color: #66708d; }
+    .field option { background: #101426; }
+
+    .label {
+      display: block;
+      color: #b9c2da;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    .nav-link {
+      color: #aab4ce;
+      transition: .2s;
+    }
+
+    .nav-link:hover, .nav-link.active { color: var(--cyan); }
+
+    .stat-number {
+      font-family: Orbitron, sans-serif;
+      font-size: 27px;
+      font-weight: 700;
+    }
+
+    .event-card {
+      background: rgba(9, 13, 28, .72);
+      border: 1px solid #252d47;
+      border-radius: 14px;
+      padding: 18px;
+      transition: .2s;
+    }
+
+    .event-card:hover {
+      border-color: rgba(0, 245, 255, .5);
+      transform: translateY(-2px);
+    }
+
+    .status-pill {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: capitalize;
+      background: rgba(0, 245, 255, .09);
+      color: var(--cyan);
+    }
+
+    .status-completed { background: #183328; color: #86efac; }
+    .status-cancelled { background: #3a1c2a; color: #fda4af; }
+    .status-ongoing { background: #352714; color: #fcd34d; }
+
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      max-width: calc(100vw - 40px);
+      z-index: 50;
+      padding: 14px 18px;
+      border-radius: 12px;
+      background: #151c30;
+      border: 1px solid #34405d;
+      box-shadow: 0 12px 35px #0008;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid #64748b;
+      border-top-color: var(--cyan);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    [hidden] { display: none !important; }
+  </style>
+</head>
+
+<body>
+  <header class="sticky top-0 z-30 border-b border-slate-800/80 bg-[#080b17]/90 backdrop-blur-xl">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4">
+      <a href="index.html" class="brand text-lg font-bold tracking-wide">
+        <span class="neon-text">DES</span>TECH
+        <span class="text-purple-400">MASTERS</span>
+      </a>
+
+      <nav class="hidden items-center gap-6 text-sm md:flex">
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="hackathons.html" class="nav-link">Hackathons</a>
+        <a href="lineup.html" class="nav-link">Team Lineup</a>
+        <a href="results.html" class="nav-link">Results</a>
+        <a href="profile.html" class="nav-link">Profile</a>
+      </nav>
+
+      <button id="logoutBtn" class="rounded-lg border border-slate-700 px-3 py-2 text-sm text-slate-300 hover:border-red-400 hover:text-red-300">
+        Log out
+      </button>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-7xl px-5 py-8 md:py-12">
+    <section class="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-end">
+      <div>
+        <div class="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-[.25em] text-purple-300">
+          <span class="h-2 w-2 rounded-full bg-purple-400"></span>
+          Control Center
+        </div>
+        <h1 class="text-2xl font-bold sm:text-4xl">
+          ADMIN <span class="neon-text">DASHBOARD</span>
+        </h1>
+        <p class="mt-3 max-w-xl text-sm leading-6 text-slate-400">
+          Manage hackathon events, registration details, schedules, and event status.
+        </p>
+      </div>
+
+      <button id="newHackathonBtn" class="neon-button rounded-xl px-5 py-3 text-sm">
+        + Create Hackathon
+      </button>
+    </section>
+
+    <div id="pageMessage" class="glass mb-6 rounded-xl p-4 text-sm text-slate-300">
+      <div class="flex items-center gap-3">
+        <div class="spinner"></div>
+        Verifying your administrator access...
+      </div>
+    </div>
+
+    <section id="adminContent" hidden>
+      <div class="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="glass rounded-2xl p-5">
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Hackathons</p>
+          <p id="totalCount" class="stat-number mt-3 neon-text">—</p>
+          <p class="mt-2 text-xs text-slate-500">Events in the database</p>
+        </div>
+
+        <div class="glass rounded-2xl p-5">
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Open</p>
+          <p id="openCount" class="stat-number mt-3 text-emerald-300">—</p>
+          <p class="mt-2 text-xs text-slate-500">Accepting registrations</p>
+        </div>
+
+        <div class="glass rounded-2xl p-5">
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Upcoming</p>
+          <p id="upcomingCount" class="stat-number mt-3 text-purple-300">—</p>
+          <p class="mt-2 text-xs text-slate-500">Scheduled events</p>
+        </div>
+
+        <div class="glass rounded-2xl p-5">
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Completed</p>
+          <p id="completedCount" class="stat-number mt-3 text-amber-300">—</p>
+          <p class="mt-2 text-xs text-slate-500">Finished events</p>
+        </div>
+      </div>
+
+      <section id="createSection" class="glass mb-8 rounded-2xl p-5 md:p-7" hidden>
+        <div class="mb-6 flex items-start justify-between gap-4">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-widest text-purple-300">Event Management</p>
+            <h2 id="formTitle" class="mt-2 text-lg font-bold sm:text-xl">CREATE HACKATHON</h2>
+            <p class="mt-2 text-sm text-slate-400">Enter the event information below.</p>
+          </div>
+          <button id="closeFormBtn" type="button" aria-label="Close form" class="rounded-lg border border-slate-700 px-3 py-2 text-slate-300 hover:text-white">✕</button>
+        </div>
+
+        <form id="hackathonForm" class="space-y-5">
+          <input id="hackathonId" type="hidden">
+
+          <div class="grid gap-5 md:grid-cols-2">
+            <div>
+              <label class="label" for="title">Hackathon title *</label>
+              <input class="field" id="title" name="title" maxlength="200" required placeholder="e.g. DesTech Innovation Hackathon">
+            </div>
+
+            <div>
+              <label class="label" for="organizer">Organizer</label>
+              <input class="field" id="organizer" name="organizer" maxlength="200" placeholder="Organization or institution">
+            </div>
+
+            <div>
+              <label class="label" for="venue">Venue / Location</label>
+              <input class="field" id="venue" name="venue" maxlength="255" placeholder="Online, campus, or city">
+            </div>
+
+            <div>
+              <label class="label" for="event_url">Event / Registration URL</label>
+              <input class="field" id="event_url" name="event_url" type="url" maxlength="1000" placeholder="https://example.com/event">
+            </div>
+
+            <div>
+              <label class="label" for="start_date">Start date and time *</label>
+              <input class="field" id="start_date" name="start_date" type="datetime-local" required>
+            </div>
+
+            <div>
+              <label class="label" for="end_date">End date and time *</label>
+              <input class="field" id="end_date" name="end_date" type="datetime-local" required>
+            </div>
+
+            <div>
+              <label class="label" for="registration_deadline">Registration deadline</label>
+              <input class="field" id="registration_deadline" name="registration_deadline" type="datetime-local">
+            </div>
+
+            <div>
+              <label class="label" for="status">Event status *</label>
+              <select class="field" id="status" name="status" required>
+                <option value="upcoming">Upcoming</option>
+                <option value="open">Open for registration</option>
+                <option value="ongoing">Ongoing</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="label" for="description">Description</label>
+            <textarea class="field" id="description" name="description" rows="4" placeholder="Describe the hackathon, its goals, and who can participate."></textarea>
+          </div>
+
+          <div class="flex flex-wrap gap-3 border-t border-slate-800 pt-5">
+            <button id="saveBtn" class="neon-button rounded-xl px-6 py-3 text-sm" type="submit">
+              Create Hackathon
+            </button>
+            <button id="cancelFormBtn" class="rounded-xl border border-slate-700 px-6 py-3 text-sm text-slate-300 hover:border-slate-500" type="button">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="glass rounded-2xl p-5 md:p-7">
+        <div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-widest text-cyan-300">Database Overview</p>
+            <h2 class="mt-2 text-lg font-bold sm:text-xl">MANAGE HACKATHONS</h2>
+          </div>
+          <button id="refreshBtn" class="self-start rounded-lg border border-slate-700 px-4 py-2 text-sm text-slate-300 hover:border-cyan-400 hover:text-cyan-300 sm:self-auto">
+            ↻ Refresh
+          </button>
+        </div>
+
+        <div class="mb-5">
+          <input id="searchInput" class="field" type="search" placeholder="Search by title, organizer, venue, or status...">
+        </div>
+
+        <div id="eventList" class="grid gap-4 lg:grid-cols-2">
+          <p class="text-sm text-slate-400">Loading hackathons...</p>
+        </div>
+      </section>
+    </section>
+
+    <footer class="mt-10 border-t border-slate-800 pt-5 text-center text-xs text-slate-500">
+      DesTech Masters · Admin Control Center
+    </footer>
+  </main>
+
+  <div id="toast" class="toast text-sm" role="status" aria-live="polite" hidden></div>
+
+  <script>
+    // Keep this URL consistent with the API URL used by your other working pages.
+    const API_BASE = "http://127.0.0.1:5000";
+
+    const $ = (id) => document.getElementById(id);
+
+    let hackathons = [];
+    let isAdmin = false;
+    let toastTimer;
+
+    function notify(message, isError = false) {
+      const toast = $("toast");
+      toast.textContent = message;
+      toast.style.borderColor = isError ? "#fb7185" : "#00f5ff";
+      toast.hidden = false;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { toast.hidden = true; }, 4000);
+    }
+
+    async function apiFetch(path, options = {}) {
+      const response = await fetch(`${API_BASE}${path}`, {
+        ...options,
+        credentials: "include",
+        headers: {
+          ...(options.body ? { "Content-Type": "application/json" } : {}),
+          ...(options.headers || {})
+        }
+      });
+
+      let data = {};
+      try {
+        data = await response.json();
+      } catch (_) {
+        data = {};
+      }
+
+      if (response.status === 401) {
+        window.location.href = "login.html";
+        throw new Error("Your session has expired. Please log in again.");
+      }
+
+      return { response, data };
+    }
+
+    async function verifyAdmin() {
+      try {
+        const { response, data } = await apiFetch("/api/auth/me");
+
+        if (!response.ok) {
+          throw new Error(data.message || data.error || "Please log in first.");
+        }
+
+        const user = data.user || data;
+        const role = String(user.role || "").toLowerCase();
+
+        if (role === "admin") {
+          isAdmin = true;
+          return true;
+        }
+
+        // Fallback to the existing admin-check route if /me doesn't include a role.
+        const check = await apiFetch("/api/admin/check");
+        const checkUser = check.data.user || {};
+        const allowed =
+          check.response.ok &&
+          (check.data.is_admin === true ||
+           check.data.isAdmin === true ||
+           check.data.admin === true ||
+           String(checkUser.role || "").toLowerCase() === "admin");
+
+        if (allowed) {
+          isAdmin = true;
+          return true;
+        }
+
+        throw new Error("Administrator access is required to open this page.");
+      } catch (error) {
+        $("pageMessage").innerHTML = `
+          <p class="font-semibold text-rose-300">Access denied</p>
+          <p class="mt-2 text-slate-400"></p>
+          <a href="login.html" class="mt-4 inline-block text-cyan-300 hover:underline">Return to login</a>
+        `;
+        $("pageMessage").querySelector("p.mt-2").textContent =
+          error.message || "Unable to verify administrator access.";
+        $("pageMessage").hidden = false;
+        $("adminContent").hidden = true;
+        return false;
+      }
+    }
+
+    function formatDate(value) {
+      if (!value) return "Not specified";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return String(value);
+      return date.toLocaleString([], {
+        year: "numeric", month: "short", day: "numeric",
+        hour: "2-digit", minute: "2-digit"
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[char]);
+    }
+
+    function renderStats() {
+      $("totalCount").textContent = hackathons.length;
+      $("openCount").textContent =
+        hackathons.filter(h => String(h.status).toLowerCase() === "open").length;
+      $("upcomingCount").textContent =
+        hackathons.filter(h => String(h.status).toLowerCase() === "upcoming").length;
+      $("completedCount").textContent =
+        hackathons.filter(h => String(h.status).toLowerCase() === "completed").length;
+    }
+
+    function renderHackathons() {
+      const query = $("searchInput").value.trim().toLowerCase();
+
+      const filtered = hackathons.filter(h => [
+        h.title, h.name, h.organizer, h.venue, h.status, h.description
+      ].some(value => String(value || "").toLowerCase().includes(query)));
+
+      if (!filtered.length) {
+        $("eventList").innerHTML = `
+          <div class="rounded-xl border border-dashed border-slate-700 p-8 text-center lg:col-span-2">
+            <p class="font-semibold text-slate-300">No hackathons found</p>
+            <p class="mt-2 text-sm text-slate-500">
+              ${hackathons.length ? "Try a different search." : "Create your first hackathon to get started."}
+            </p>
+          </div>`;
+        return;
+      }
+
+      $("eventList").innerHTML = filtered.map(h => {
+        const title = h.title || h.name || "Untitled hackathon";
+        const status = String(h.status || "upcoming").toLowerCase();
+        const statusClass = ["completed", "cancelled", "ongoing"].includes(status)
+          ? `status-${status}` : "";
+
+        return `
+          <article class="event-card">
+            <div class="flex items-start justify-between gap-3">
+              <h3 class="text-sm font-bold leading-6">${escapeHtml(title)}</h3>
+              <span class="status-pill ${statusClass}">${escapeHtml(status)}</span>
+            </div>
+            <p class="mt-3 line-clamp-3 text-sm leading-6 text-slate-400">${escapeHtml(h.description || "No description provided.")}</p>
+            <div class="mt-4 space-y-2 text-xs text-slate-400">
+              <p><span class="text-slate-500">Organizer:</span> ${escapeHtml(h.organizer || "Not specified")}</p>
+              <p><span class="text-slate-500">Venue:</span> ${escapeHtml(h.venue || h.location || "Not specified")}</p>
+              <p><span class="text-slate-500">Starts:</span> ${escapeHtml(formatDate(h.start_date))}</p>
+              <p><span class="text-slate-500">Ends:</span> ${escapeHtml(formatDate(h.end_date))}</p>
+            </div>
+            <div class="mt-5 flex flex-wrap gap-2 border-t border-slate-800 pt-4">
+              <button type="button" data-edit="${escapeHtml(h.id)}" class="rounded-lg border border-cyan-500/40 px-3 py-2 text-xs font-semibold text-cyan-300 hover:bg-cyan-500/10">
+                Edit
+              </button>
+              <button type="button" data-delete="${escapeHtml(h.id)}" data-title="${escapeHtml(title)}" class="rounded-lg border border-rose-500/30 px-3 py-2 text-xs font-semibold text-rose-300 hover:bg-rose-500/10">
+                Delete
+              </button>
+              ${h.event_url || h.registration_url ? `
+                <a href="${escapeHtml(h.event_url || h.registration_url)}" target="_blank" rel="noopener noreferrer" class="rounded-lg border border-slate-700 px-3 py-2 text-xs text-slate-300 hover:border-slate-500">
+                  View event ↗
+                </a>` : ""}
+            </div>
+          </article>`;
+      }).join("");
+    }
+
+    async function loadHackathons() {
+      $("eventList").innerHTML = `
+        <div class="flex items-center gap-3 p-6 text-sm text-slate-400 lg:col-span-2">
+          <div class="spinner"></div> Loading hackathons...
+        </div>`;
+
+      try {
+        const { response, data } = await apiFetch("/api/hackathons");
+
+        if (!response.ok) {
+          throw new Error(data.message || data.error || "Unable to load hackathons.");
+        }
+
+        hackathons = Array.isArray(data)
+          ? data
+          : (data.hackathons || data.events || data.data || []);
+
+        renderStats();
+        renderHackathons();
+      } catch (error) {
+        $("eventList").innerHTML = `
+          <div class="rounded-xl border border-rose-500/30 p-5 text-sm text-rose-300 lg:col-span-2"></div>`;
+        $("eventList").firstElementChild.textContent = error.message;
+      }
+    }
+
+    function openForm(hackathon = null) {
+      $("hackathonForm").reset();
+      $("hackathonId").value = hackathon?.id ?? "";
+      $("formTitle").textContent = hackathon ? "EDIT HACKATHON" : "CREATE HACKATHON";
+      $("saveBtn").textContent = hackathon ? "Save Changes" : "Create Hackathon";
+
+      if (hackathon) {
+        $("title").value = hackathon.title || hackathon.name || "";
+        $("description").value = hackathon.description || "";
+        $("organizer").value = hackathon.organizer || "";
+        $("venue").value = hackathon.venue || hackathon.location || "";
+        $("event_url").value = hackathon.event_url || hackathon.registration_url || "";
+        $("start_date").value = toDateTimeLocal(hackathon.start_date);
+        $("end_date").value = toDateTimeLocal(hackathon.end_date);
+        $("registration_deadline").value = toDateTimeLocal(hackathon.registration_deadline);
+        $("status").value = hackathon.status || "upcoming";
+      }
+
+      $("createSection").hidden = false;
+      $("createSection").scrollIntoView({ behavior: "smooth", block: "start" });
+      $("title").focus();
+    }
+
+    function toDateTimeLocal(value) {
+      if (!value) return "";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return String(value).slice(0, 16);
+      const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+      return local.toISOString().slice(0, 16);
+    }
+
+    function closeForm() {
+      $("createSection").hidden = true;
+      $("hackathonForm").reset();
+      $("hackathonId").value = "";
+    }
+
+    $("newHackathonBtn").addEventListener("click", () => openForm());
+    $("closeFormBtn").addEventListener("click", closeForm);
+    $("cancelFormBtn").addEventListener("click", closeForm);
+    $("refreshBtn").addEventListener("click", loadHackathons);
+    $("searchInput").addEventListener("input", renderHackathons);
+
+    $("hackathonForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!isAdmin) return notify("Admin access is required.", true);
+
+      const start = new Date($("start_date").value);
+      const end = new Date($("end_date").value);
+      const deadlineValue = $("registration_deadline").value;
+
+      if (end <= start) {
+        return notify("The end date must be later than the start date.", true);
+      }
+
+      if (deadlineValue && new Date(deadlineValue) > start) {
+        return notify("The registration deadline should not be later than the start date.", true);
+      }
+
+      const payload = {
+        title: $("title").value.trim(),
+        description: $("description").value.trim(),
+        organizer: $("organizer").value.trim(),
+        venue: $("venue").value.trim(),
+        event_url: $("event_url").value.trim(),
+        start_date: $("start_date").value.replace("T", " ") + ":00",
+        end_date: $("end_date").value.replace("T", " ") + ":00",
+        registration_deadline: deadlineValue
+          ? deadlineValue.replace("T", " ") + ":00"
+          : null,
+        status: $("status").value
+      };
+
+      const id = $("hackathonId").value;
+      const button = $("saveBtn");
+      button.disabled = true;
+      button.textContent = "Saving...";
+
+      try {
+        // These endpoints will be added to backend/server.py in the next step.
+        const path = id
+          ? `/api/hackathons/${encodeURIComponent(id)}`
+          : "/api/hackathons";
+
+        const { response, data } = await apiFetch(path, {
+          method: id ? "PUT" : "POST",
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok || data.success === false) {
+          throw new Error(
+            data.message || data.error ||
+            (response.status === 404 || response.status === 405
+              ? "The create/edit API is not implemented yet. Add the backend routes next."
+              : "Unable to save this hackathon.")
+          );
+        }
+
+        notify(id ? "Hackathon updated successfully." : "Hackathon created successfully.");
+        closeForm();
+        await loadHackathons();
+      } catch (error) {
+        notify(error.message || "Unable to save hackathon.", true);
+      } finally {
+        button.disabled = false;
+        button.textContent = $("hackathonId").value ? "Save Changes" : "Create Hackathon";
+      }
+    });
+
+    $("eventList").addEventListener("click", async (event) => {
+      const editButton = event.target.closest("[data-edit]");
+      const deleteButton = event.target.closest("[data-delete]");
+
+      if (editButton) {
+        const item = hackathons.find(h => String(h.id) === editButton.dataset.edit);
+        if (item) openForm(item);
+        return;
+      }
+
+      if (deleteButton) {
+        if (!isAdmin) return notify("Admin access is required.", true);
+
+        const id = deleteButton.dataset.delete;
+        const title = deleteButton.dataset.title || "this hackathon";
+
+        if (!confirm(`Delete "${title}"? This action cannot be undone.`)) return;
+
+        deleteButton.disabled = true;
+
+        try {
+          const { response, data } = await apiFetch(
+            `/api/hackathons/${encodeURIComponent(id)}`,
+            { method: "DELETE" }
+          );
+
+          if (!response.ok || data.success === false) {
+            throw new Error(
+              data.message || data.error ||
+              "The delete API is not implemented yet. Add the backend routes next."
+            );
+          }
+
+          notify("Hackathon deleted successfully.");
+          await loadHackathons();
+        } catch (error) {
+          notify(error.message || "Unable to delete hackathon.", true);
+          deleteButton.disabled = false;
+        }
+      }
+    });
+
+    $("logoutBtn").addEventListener("click", async () => {
+      try {
+        await apiFetch("/api/auth/logout", { method: "POST" });
+      } catch (_) {
+        // Return to login even if the logout request fails.
+      }
+      window.location.href = "login.html";
+    });
+
+    async function init() {
+      const allowed = await verifyAdmin();
+      if (!allowed) return;
+
+      $("pageMessage").hidden = true;
+      $("adminContent").hidden = false;
+      await loadHackathons();
+    }
+
+    init();
+  </script>
+</body>
+</html>
